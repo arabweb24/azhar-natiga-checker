@@ -14,7 +14,6 @@ if errorlevel 1 (
 if not exist "node_modules" (
   echo First run: installing dependencies, please wait...
   call npm install
-  call npx playwright install chromium
   echo.
 )
 

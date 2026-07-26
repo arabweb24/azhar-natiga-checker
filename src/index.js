@@ -312,6 +312,59 @@ azhar-natiga-checker — متابعة نتيجة الأزهر بالرقم ال�
 `);
 }
 
+// Launch a browser as robustly as possible on Windows:
+//   1) the system Edge / Chrome (present on virtually every Windows PC, no download),
+//   2) Playwright's bundled Chromium,
+//   3) if a browser binary is missing/quarantined, auto-install it once and retry.
+async function launchBrowser(cfg) {
+  const headless = cfg.headless !== false;
+  const attempts = [];
+
+  const channels =
+    cfg.browserChannels && cfg.browserChannels.length
+      ? cfg.browserChannels
+      : ["msedge", "chrome"];
+  for (const channel of channels) {
+    attempts.push({
+      label: `المتصفح المثبّت (${channel})`,
+      opts: { headless, channel },
+    });
+  }
+  attempts.push({ label: "متصفح Playwright المدمج", opts: { headless } });
+
+  let lastErr;
+  for (const a of attempts) {
+    try {
+      const browser = await chromium.launch(a.opts);
+      log(`تم فتح المتصفح: ${a.label}`);
+      return browser;
+    } catch (e) {
+      lastErr = e;
+      const msg = String(e && e.message ? e.message : e).split("\n")[0];
+      log(`تعذّر فتح ${a.label} — ${msg}`);
+    }
+  }
+
+  // Last resort: (re)install the bundled Chromium, then launch it.
+  try {
+    const { execSync } = require("child_process");
+    log("بحاول أثبّت متصفح Playwright تلقائيًا... (مرة واحدة، محتاج إنترنت)");
+    execSync("npx playwright install chromium", { cwd: ROOT, stdio: "inherit" });
+    const browser = await chromium.launch({ headless });
+    log("تم فتح المتصفح: متصفح Playwright المدمج (بعد التثبيت)");
+    return browser;
+  } catch (e) {
+    lastErr = e;
+  }
+
+  console.error(
+    "\n✖ تعذّر فتح أي متصفح على الجهاز. جرّب مرة واحدة يدويًا:\n" +
+      "      npx playwright install chromium\n" +
+      "  وتأكد إن Microsoft Edge أو Google Chrome متثبّت.\n"
+  );
+  throw lastErr || new Error("no browser could be launched");
+}
+
 // ----------------------------- main -----------------------------------------
 
 async function main() {
@@ -347,7 +400,7 @@ async function main() {
   );
   log("للإيقاف اضغط Ctrl+C في أي وقت.\n");
 
-  const browser = await chromium.launch({ headless: cfg.headless !== false });
+  const browser = await launchBrowser(cfg);
   const context = await browser.newContext({
     locale: "ar-EG",
     userAgent:

@@ -5,6 +5,7 @@
   "jitterSeconds": 8,
   "maxAttempts": 500,
   "headless": true,
+  "browserChannels": ["msedge", "chrome"],
   "navTimeoutSeconds": 45,
   "resultWaitSeconds": 8,
   "blockAssets": true,
