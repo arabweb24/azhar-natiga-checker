@@ -1,0 +1,51 @@
+{
+  "url": "https://natiga.azhar.eg/",
+  "nationalId": "",
+  "intervalSeconds": 20,
+  "jitterSeconds": 8,
+  "maxAttempts": 500,
+  "headless": true,
+  "navTimeoutSeconds": 45,
+  "resultWaitSeconds": 8,
+  "blockAssets": true,
+  "outputDir": "results",
+  "stopOnNotFound": false,
+
+  "inputSelector": "",
+  "inputLabelHint": "قومي",
+
+  "searchButtonText": "بحث",
+  "cooldownButtonText": "انتظر",
+
+  "successKeywords": [
+    "هذه النتيجة إرشادية",
+    "المجموع",
+    "الدرجة",
+    "الحالة",
+    "ناجح",
+    "راسب",
+    "دور ثان",
+    "له دور ثان"
+  ],
+  "notFoundKeywords": [
+    "لا توجد نتيجة",
+    "لا يوجد",
+    "غير صحيح",
+    "غير صحيحة",
+    "لم يتم العثور",
+    "رقم قومي غير",
+    "برجاء التأكد",
+    "تأكد من الرقم"
+  ],
+  "errorKeywords": [
+    "خطأ في الخادم",
+    "Service Unavailable",
+    "503",
+    "502",
+    "Bad Gateway",
+    "Gateway Timeout",
+    "برجاء المحاولة",
+    "حاول مرة أخرى",
+    "الموقع مشغول"
+  ]
+}

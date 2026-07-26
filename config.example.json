@@ -1,0 +1,7 @@
+{
+  "nationalId": "30805152302986",
+  "intervalSeconds": 20,
+  "maxAttempts": 500,
+  "headless": true,
+  "stopOnNotFound": false
+}

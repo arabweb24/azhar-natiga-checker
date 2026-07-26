@@ -1,0 +1,31 @@
+{
+  "name": "azhar-natiga-checker",
+  "version": "1.0.0",
+  "description": "أداة مفتوحة المصدر لمتابعة نتيجة الأزهر بالرقم القومي — تحاول تلقائيًا حتى تظهر النتيجة وتنبّهك. Auto-retry checker for the Al-Azhar results portal by national ID.",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "bin": {
+    "azhar-natiga": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "calibrate": "node src/index.js --calibrate",
+    "postinstall": "node -e \"console.log('\\n\\u2714 تم التثبيت. شغّل الأمر التالي مرة واحدة لتحميل المتصفح:\\n    npx playwright install chromium\\n')\""
+  },
+  "keywords": [
+    "azhar",
+    "natiga",
+    "results",
+    "egypt",
+    "playwright",
+    "الأزهر",
+    "نتيجة"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
