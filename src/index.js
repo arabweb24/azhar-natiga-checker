@@ -95,6 +95,36 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+// Ask the user a question on the terminal and resolve with the typed answer.
+function promptLine(question) {
+  return new Promise((resolve) => {
+    const readline = require("readline");
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve((answer || "").trim());
+    });
+  });
+}
+
+// Get a valid national ID: from config/CLI, else ask interactively (up to 3 tries).
+async function resolveNationalId(cfg) {
+  const valid = (v) => /^\d{6,}$/.test(String(v || "").trim());
+  let id = cfg.nationalId ? String(cfg.nationalId).trim() : "";
+  if (valid(id)) return id;
+
+  if (process.stdin.isTTY) {
+    for (let i = 0; i < 3 && !valid(id); i++) {
+      id = await promptLine("↩ اكتب الرقم القومي واضغط Enter: ");
+      if (!valid(id)) console.log("  ✖ رقم غير صالح (لازم أرقام فقط). حاول تاني.");
+    }
+  }
+  return valid(id) ? id : "";
+}
+
 function tsForFile() {
   const d = new Date();
   const p = (n) => String(n).padStart(2, "0");
@@ -292,15 +322,16 @@ async function main() {
     return;
   }
 
-  if (!cfg.nationalId || !/^\d{6,}$/.test(String(cfg.nationalId).trim())) {
+  cfg.nationalId = await resolveNationalId(cfg);
+  if (!cfg.nationalId) {
     console.error(
       "\n✖ لم يتم تحديد رقم قومي صالح.\n" +
-        "  مرّره بالأمر:   node src/index.js --id 30805152302986\n" +
+        "  اكتبه لما الأداة تطلبه، أو مرّره بالأمر:\n" +
+        "      node src/index.js --id 30805152302986\n" +
         "  أو ضعه داخل ملف config.json (انسخه من config.example.json)\n"
     );
     process.exit(1);
   }
-  cfg.nationalId = String(cfg.nationalId).trim();
 
   // Enforce the site's minimum cooldown; be gentle by default.
   const MIN_INTERVAL = 5;
